@@ -6,7 +6,6 @@ import mockdb.mockdb_interface as db
 
 app = Flask(__name__)
 
-
 def create_response(
     data: dict = None, status: int = 200, message: str = ""
 ) -> Tuple[Response, int]:
@@ -48,14 +47,14 @@ def hello_world():
 
 @app.route("/users/all")
 def allUsers():
-    return create_response({"data":db.get("users")})
+    return create_response({"users":db.get("users")})
 
 @app.route("/users/<userId>")
 def byId(userId):
     ans=db.getById("users",int(userId))
     if ans is None:
         return create_response(status=404,message="There is no user with such an id")
-    return create_response({"data":ans})
+    return create_response({"user":ans})
 
 @app.route("/users")
 def byTeam():
@@ -68,7 +67,26 @@ def byTeam():
 @app.route("/users",methods=['POST'])
 def insertUser():
     user=request.json
-    return db.create("users",user)
+    for i in db.userBase:
+        if i not in user:
+            return create_response(status=422,message="You didnt write all the fields!")
+    return create_response({"new user":db.create("users",user)},status=201)
+
+@app.route("/users/<id>",methods=['PUT'])
+def update(id):
+    fields=request.json
+    answer=db.updateById("users",int(id),fields)
+    if answer is None:
+        return create_response(status=404,message="This id doesnt exist")
+    return create_response({"Updated user":answer})
+
+@app.route("/users/<id>",methods=['DELETE'])
+def delete(id):
+    if db.getById("users",int(id)) is None:
+        return create_response(status=404,message="This id doesnt exist")
+    db.deleteById("users",int(id))
+    return create_response(message="The user deleted successfully!")
+
 @app.route("/mirror/<name>")
 def mirror(name):
     data = {"name": name}
