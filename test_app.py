@@ -1,8 +1,9 @@
-
+import pytest
 # pytest automatically injects fixtures
 # that are defined in conftest.py
 # in this case, client is injected
 def test_index(client):
+    print(client,'client')
     res = client.get("/")
     assert res.status_code == 200
     assert res.json["result"]["content"] == "hello world!"
@@ -15,7 +16,7 @@ def test_mirror(client):
 
 
 def test_get_users(client):
-    res = client.get("/users")
+    res = client.get("/users/all")
     assert res.status_code == 200
 
     res_users = res.json["result"]["users"]
@@ -39,3 +40,20 @@ def test_get_user_id(client):
     res_user = res.json["result"]["user"]
     assert res_user["name"] == "Aria"
     assert res_user["age"] == 19
+
+def test_insert_user(client):
+    info={"name":"Esty","age":20,"team":"LWB"}
+    res=client.post("http://localhost:5000/users",json=info)
+    assert res.status_code==201
+
+def test_update(client):
+    info={"age":25}
+    res=client.put("http://localhost:5000/users/2",json=info)
+    assert res.status_code==200
+    resUser=res.json["result"]["Updated user"]
+    assert resUser["age"]==25
+
+def test_delete(client):
+    res=client.delete("http://localhost:5000/users/1")
+    assert res.status_code==200
+
