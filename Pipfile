@@ -6,11 +6,9 @@ name = "pypi"
 [packages]
 flask = "*"
 requests = "*"
+pytest = "*"
 
 [dev-packages]
 pytest = "*"
 black = "*"
 ipdb = "*"
-
-[requires]
-python_version = "3.7"

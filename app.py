@@ -43,7 +43,7 @@ def create_response(
 
 @app.route("/")
 def hello_world():
-    return create_response({"content": "good morning"})
+    return create_response({"content": "hello world!"})
 
 @app.route("/users/all")
 def allUsers():
